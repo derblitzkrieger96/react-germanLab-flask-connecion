@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/react-germanLab-flask-connecion/static/css/main.5e0cb041.css",
-    "main.js": "/react-germanLab-flask-connecion/static/js/main.f3a8a569.js",
+    "main.js": "/react-germanLab-flask-connecion/static/js/main.d10745fc.js",
     "static/js/787.dd425a2c.chunk.js": "/react-germanLab-flask-connecion/static/js/787.dd425a2c.chunk.js",
     "index.html": "/react-germanLab-flask-connecion/index.html",
     "main.5e0cb041.css.map": "/react-germanLab-flask-connecion/static/css/main.5e0cb041.css.map",
-    "main.f3a8a569.js.map": "/react-germanLab-flask-connecion/static/js/main.f3a8a569.js.map",
+    "main.d10745fc.js.map": "/react-germanLab-flask-connecion/static/js/main.d10745fc.js.map",
     "787.dd425a2c.chunk.js.map": "/react-germanLab-flask-connecion/static/js/787.dd425a2c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5e0cb041.css",
-    "static/js/main.f3a8a569.js"
+    "static/js/main.d10745fc.js"
   ]
 }
