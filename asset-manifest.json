@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/react-germanLab-flask-connecion/static/css/main.fa778232.css",
-    "main.js": "/react-germanLab-flask-connecion/static/js/main.2ac775e6.js",
+    "main.css": "/react-germanLab-flask-connecion/static/css/main.5e0cb041.css",
+    "main.js": "/react-germanLab-flask-connecion/static/js/main.79d36f27.js",
     "static/js/787.dd425a2c.chunk.js": "/react-germanLab-flask-connecion/static/js/787.dd425a2c.chunk.js",
     "index.html": "/react-germanLab-flask-connecion/index.html",
-    "main.fa778232.css.map": "/react-germanLab-flask-connecion/static/css/main.fa778232.css.map",
-    "main.2ac775e6.js.map": "/react-germanLab-flask-connecion/static/js/main.2ac775e6.js.map",
+    "main.5e0cb041.css.map": "/react-germanLab-flask-connecion/static/css/main.5e0cb041.css.map",
+    "main.79d36f27.js.map": "/react-germanLab-flask-connecion/static/js/main.79d36f27.js.map",
     "787.dd425a2c.chunk.js.map": "/react-germanLab-flask-connecion/static/js/787.dd425a2c.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.fa778232.css",
-    "static/js/main.2ac775e6.js"
+    "static/css/main.5e0cb041.css",
+    "static/js/main.79d36f27.js"
   ]
 }
