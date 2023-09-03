@@ -4,16 +4,16 @@ import { useEffect, useRef, useState } from "react";
 function App() {
   // State to store quiz questions
   const [questions, setQuestions] = useState([]);
-  const [selectedValue, setSelectedValue] = useState(""); // State to store the selected value
+  const [selectedValue, setSelectedValue] = useState(""); // State to store the selected German Level
   const [userName, setUserName] = useState("");
 
-  // Function to handle input change
+  // Function to handle input change of the userName
   const handleNameChange = (e) => {
     setUserName(e.target.value);
   };
 
   const handleSelectChange = (event) => {
-    setSelectedValue(event.target.value); // Update the selected value when the user makes a selection
+    setSelectedValue(event.target.value); // Update the selected German level value when the user makes a selection
   };
 
   useEffect(() => {
@@ -24,7 +24,7 @@ function App() {
           `https://api-germanlab.onrender.com/quiz/${selectedValue}/all`
         );
         const data = await res.json();
-        console.log(data);
+
         setQuestions(data);
       };
       fetchData();
@@ -35,7 +35,9 @@ function App() {
     <div className="App">
       {/* Header component */}
       <Header />
+      {/* Get user name component */}
       <GetName userName={userName} handleNameChange={handleNameChange} />
+      {/* DropDown menu to select the german level */}
       <DropDown
         selectedValue={selectedValue}
         handleSelectChange={handleSelectChange}
@@ -50,10 +52,12 @@ function App() {
   );
 }
 
+// GetName component for displaying and handling user's name input
 function GetName(props) {
   return (
     <div className="get-name">
       <h1>Welcome to My App</h1>
+      {/* Label and input field for entering the user's name */}
       <label>
         Enter your name:
         <input
@@ -63,19 +67,22 @@ function GetName(props) {
           onChange={props.handleNameChange}
         />
       </label>
+      {/* Display a greeting if the user's name is not empty */}
       {props.userName !== "" && <p>Hello, {props.userName}!</p>}
     </div>
   );
 }
 
+// DropDown component for selecting a German language level
 function DropDown(props) {
   return (
     <div className="dropDown">
       <h2>Select a German level</h2>
+      {/* Dropdown menu for selecting the language level */}
       <select
-        className="select"
-        value={props.selectedValue}
-        onChange={props.handleSelectChange}
+        className="select" // CSS class for styling
+        value={props.selectedValue} // Value is controlled by the selectedValue prop
+        onChange={props.handleSelectChange} // Event handler for dropdown changes
       >
         <option value="">Select an option</option>
         <option value="A1">A1</option>
@@ -83,6 +90,7 @@ function DropDown(props) {
         <option value="B1">B1</option>
         <option value="B2">B2</option>
       </select>
+      {/* Display the selected value if a level is chosen */}
       {props.selectedValue !== "" && <p>You selected: {props.selectedValue}</p>}
     </div>
   );
@@ -100,7 +108,6 @@ function Quiz(props) {
   const [score, setScore] = useState(null);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [formDataIsChecked, setFormDataIsChecked] = useState({});
-  console.log("aaaaaaaaaa", props.questions);
 
   const resetFormData = () => {
     setFormData({
@@ -126,17 +133,17 @@ function Quiz(props) {
     });
   };
 
-  // Map through quiz questions and render Question components
+  // get right answers
   const right_answers = Object.keys(props.questions).reduce((acc, q) => {
     acc[q] = props.questions[q].right_answer;
     return acc;
   }, {});
 
-  console.log("right_answers", right_answers);
+  // Map through quiz questions and render Question components
   const questions = Object.keys(props.questions).map((q) => {
-    console.log(props.questions[q]);
     return (
       <Question
+        key={q}
         number={q}
         statement={props.questions[q].statement}
         options={props.questions[q].options}
@@ -172,18 +179,11 @@ function Quiz(props) {
       acc[q] = formData[q].value;
       return acc;
     }, {});
-    const formDataIsChecked = Object.keys(formData).reduce((acc, q) => {
-      acc[formData[q].value] = formData[q].isChecked;
-      return acc;
-    }, {});
-    console.log("formData: ", formDataValues);
-    console.log("formData: ", formDataIsChecked);
 
     const accuracy = calculateAccuracy(right_answers, formDataValues);
     setScore(accuracy);
     setFormSubmitted(true);
     setFormDataIsChecked(formDataValues);
-    console.log(`Accuracy: ${accuracy.toFixed(2)}%`);
   };
 
   function get_final_message(score, level, name) {
@@ -231,36 +231,42 @@ function Quiz(props) {
     </form>
   );
 }
+
+// Question component for rendering quiz questions and options
 function Question(props) {
-  console.log("lloego", props.formDataIsChecked);
-  // Map through question options and render radio buttons
+  // Get the selected option for this question
   const selected = props.formDataIsChecked[props.number];
+  // Map through question options and render radio buttons
   const options = props.options.map((o, index) => {
     return (
-      <label className="label" htmlFor={o}>
+      <label className="label" htmlFor={o} key={o}>
         <input
           type="radio"
-          name={props.number}
+          name={props.number} // Use the question number as the radio group name
           id={o}
           value={o}
-          onChange={props.onChangeForm}
-          required
+          onChange={props.onChangeForm} // Event handler for radio button changes
+          required // Make the radio button required
+          key={o + index}
         ></input>
+        {/* Option component for displaying option text */}
         <Option
-          option={o}
+          key={o}
+          option={o} // Pass the option text as a prop
           style={{
+            // Determine the style based on form submission and correctness
             color:
               props.formSubmitted && selected === o
                 ? props.right_answer === o
-                  ? "green"
-                  : "red"
-                : "black",
+                  ? "green" // Green for correct answers
+                  : "red" // Red for incorrect answers
+                : "black", // Default color for unanswered questions
             border:
               props.formSubmitted && selected === o
                 ? props.right_answer === o
-                  ? "2px solid green"
-                  : "2px solid red"
-                : "black",
+                  ? "2px solid green" // Green border for correct answers
+                  : "2px solid red" // Red border for incorrect answers
+                : "black", // Default border for unanswered questions
           }}
           right_answer={props.right_answer}
         />
@@ -269,14 +275,17 @@ function Question(props) {
   });
   return (
     <div>
+      {/* Display the question statement */}
       <h2 className="statement">
         Question #{props.number}: {props.statement}
       </h2>
+      {/* Display the options */}
       <ul>{options}</ul>
     </div>
   );
 }
 
+// Option component for displaying individual quiz options
 function Option(props) {
   return (
     <p className="option" style={props.style}>
@@ -285,6 +294,7 @@ function Option(props) {
   );
 }
 
+// Footer component (placeholder, can be extended as needed)
 function Footer() {
   return <div></div>;
 }
