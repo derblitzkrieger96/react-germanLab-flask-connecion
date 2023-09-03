@@ -5,6 +5,12 @@ function App() {
   // State to store quiz questions
   const [questions, setQuestions] = useState([]);
   const [selectedValue, setSelectedValue] = useState(""); // State to store the selected value
+  const [userName, setUserName] = useState("");
+
+  // Function to handle input change
+  const handleNameChange = (e) => {
+    setUserName(e.target.value);
+  };
 
   const handleSelectChange = (event) => {
     setSelectedValue(event.target.value); // Update the selected value when the user makes a selection
@@ -29,15 +35,35 @@ function App() {
     <div className="App">
       {/* Header component */}
       <Header />
-
+      <GetName userName={userName} handleNameChange={handleNameChange} />
       <DropDown
         selectedValue={selectedValue}
         handleSelectChange={handleSelectChange}
       />
       {/* Quiz component with questions and form */}
-      {selectedValue !== "" && <Quiz questions={questions} />}
+      {selectedValue !== "" && (
+        <Quiz questions={questions} userName={userName} level={selectedValue} />
+      )}
       {/* Footer component */}
       <Footer />
+    </div>
+  );
+}
+
+function GetName(props) {
+  return (
+    <div className="get-name">
+      <h1>Welcome to My App</h1>
+      <label>
+        Enter your name:
+        <input
+          className="input-name"
+          type="text"
+          value={props.userName}
+          onChange={props.handleNameChange}
+        />
+      </label>
+      {props.userName !== "" && <p>Hello, {props.userName}!</p>}
     </div>
   );
 }
@@ -128,6 +154,34 @@ function Quiz(props) {
     console.log(`Accuracy: ${accuracy.toFixed(2)}%`);
   };
 
+  function get_final_message(score, level, name) {
+    let message = "";
+    let emoji = "";
+
+    // Determine the message and emoji based on the user's score
+    if (score == 100) {
+      message = `Congratulations! Perfect score! You have mastered the ${level} level of German!`;
+      emoji = "🎉🏆👏";
+    } else if (score < 100 && score >= 80) {
+      message = `Good job! You're making steady progress!`;
+      emoji = "👍😊";
+    } else if (score < 80 && score >= 60) {
+      message = `Don't give up! With more practice, you'll do even better!`;
+      emoji = "💪🌟";
+    } else if (score < 60 && score >= 40) {
+      message = `Remember, every mistake is an opportunity to learn. Keep going!`;
+      emoji = "🤔🚀";
+    } else {
+      message = `You're just beginning. Keep learning and your score will improve!`;
+      emoji = "😢📚";
+    }
+
+    // Construct the final message
+    const final_message = `${name}, ${message}\nYour score is: ${score.toFixed(
+      2
+    )}% ${emoji}`;
+    return final_message;
+  }
   return (
     <form onSubmit={handleSubmit}>
       {/* Render the list of questions */}
@@ -137,7 +191,9 @@ function Quiz(props) {
       </button>
       {/* Display the score message */}
       {score !== null && (
-        <div className="score-message">Your score: {score.toFixed(2)}%</div>
+        <div className="score-message">
+          {get_final_message(score, props.level, props.userName)}
+        </div>
       )}
     </form>
   );
@@ -172,7 +228,7 @@ function Option(props) {
 }
 
 function Footer() {
-  return <div>Footer</div>;
+  return <div></div>;
 }
 
 export default App;
