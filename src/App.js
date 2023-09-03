@@ -1,5 +1,5 @@
 import "./App.css";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function App() {
   // State to store quiz questions
@@ -98,14 +98,31 @@ function Quiz(props) {
     1: "", // Initialize with an empty answer for question 1
   });
   const [score, setScore] = useState(null);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formDataIsChecked, setFormDataIsChecked] = useState({});
   console.log("aaaaaaaaaa", props.questions);
+
+  const resetFormData = () => {
+    setFormData({
+      1: {}, // Initialize with an empty answer for question 1
+    });
+  };
+
+  const formRef = useRef(null);
+  // Watch for changes in props.level
+  useEffect(() => {
+    // Reset formData when props.level changes
+    resetFormData();
+    formRef.current.reset();
+  }, [props.level]);
 
   // Function to handle form input changes
   const onChangeForm = (e) => {
     const { name, value } = e.target;
+    const isChecked = e.target.checked;
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: { value, isChecked },
     });
   };
 
@@ -114,6 +131,7 @@ function Quiz(props) {
     acc[q] = props.questions[q].right_answer;
     return acc;
   }, {});
+
   console.log("right_answers", right_answers);
   const questions = Object.keys(props.questions).map((q) => {
     console.log(props.questions[q]);
@@ -122,8 +140,11 @@ function Quiz(props) {
         number={q}
         statement={props.questions[q].statement}
         options={props.questions[q].options}
+        right_answer={props.questions[q].right_answer}
         formData={formData}
         onChangeForm={onChangeForm}
+        formSubmitted={formSubmitted}
+        formDataIsChecked={formDataIsChecked}
       />
     );
   });
@@ -147,10 +168,21 @@ function Quiz(props) {
   // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("formData: ", formData);
+    const formDataValues = Object.keys(formData).reduce((acc, q) => {
+      acc[q] = formData[q].value;
+      return acc;
+    }, {});
+    const formDataIsChecked = Object.keys(formData).reduce((acc, q) => {
+      acc[formData[q].value] = formData[q].isChecked;
+      return acc;
+    }, {});
+    console.log("formData: ", formDataValues);
+    console.log("formData: ", formDataIsChecked);
 
-    const accuracy = calculateAccuracy(right_answers, formData);
+    const accuracy = calculateAccuracy(right_answers, formDataValues);
     setScore(accuracy);
+    setFormSubmitted(true);
+    setFormDataIsChecked(formDataValues);
     console.log(`Accuracy: ${accuracy.toFixed(2)}%`);
   };
 
@@ -159,7 +191,7 @@ function Quiz(props) {
     let emoji = "";
 
     // Determine the message and emoji based on the user's score
-    if (score == 100) {
+    if (score === 100) {
       message = `Congratulations! Perfect score! You have mastered the ${level} level of German!`;
       emoji = "🎉🏆👏";
     } else if (score < 100 && score >= 80) {
@@ -182,8 +214,9 @@ function Quiz(props) {
     )}% ${emoji}`;
     return final_message;
   }
+
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} ref={formRef}>
       {/* Render the list of questions */}
       {questions}
       <button className="btn-submit" type="submit">
@@ -199,20 +232,41 @@ function Quiz(props) {
   );
 }
 function Question(props) {
+  console.log("lloego", props.formDataIsChecked);
   // Map through question options and render radio buttons
-  const options = props.options.map((o) => (
-    <label className="label" htmlFor={o}>
-      <input
-        type="radio"
-        name={props.number}
-        id={o}
-        value={o}
-        onChange={props.onChangeForm}
-        required
-      ></input>
-      <Option option={o} />
-    </label>
-  ));
+  const selected = props.formDataIsChecked[props.number];
+  const options = props.options.map((o, index) => {
+    return (
+      <label className="label" htmlFor={o}>
+        <input
+          type="radio"
+          name={props.number}
+          id={o}
+          value={o}
+          onChange={props.onChangeForm}
+          required
+        ></input>
+        <Option
+          option={o}
+          style={{
+            color:
+              props.formSubmitted && selected === o
+                ? props.right_answer === o
+                  ? "green"
+                  : "red"
+                : "black",
+            border:
+              props.formSubmitted && selected === o
+                ? props.right_answer === o
+                  ? "2px solid green"
+                  : "2px solid red"
+                : "black",
+          }}
+          right_answer={props.right_answer}
+        />
+      </label>
+    );
+  });
   return (
     <div>
       <h2 className="statement">
@@ -224,7 +278,11 @@ function Question(props) {
 }
 
 function Option(props) {
-  return <p className="option">{props.option}</p>;
+  return (
+    <p className="option" style={props.style}>
+      {props.option}
+    </p>
+  );
 }
 
 function Footer() {
